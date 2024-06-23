@@ -3,32 +3,36 @@ import * as Yup from "yup";
 import { useId } from "react";
 import { nanoid } from "nanoid";
 import css from "./ContactForm.module.css";
+import { useDispatch } from "react-redux";
+import { addContact } from "../../redux/contactsSlice";
 
 const initialValues = {
   name: "",
-  number: "",
+  phone: "",
 };
 
 const FormSchema = Yup.object({
   name: Yup.string().min(3, "Too short!").required("Name required!"),
-  number: Yup.string()
+  phone: Yup.string()
     .matches(
       "^[0-9]{3}[-][0-9]{2}[-][0-9]{2}$",
-      "Wrong number. Example: 999-25-25"
+      "Wrong phone number. Example: 999-25-25"
     )
-    .required("Number required!"),
+    .required("Phone number required!"),
 });
 
-export default function ContactForm({ onAdd }) {
+export default function ContactForm() {
   const nameField = useId();
   const numberField = useId();
+  const dispatch = useDispatch();
 
   const handleSubmit = (values, action) => {
-    onAdd({
-      id: nanoid(),
-      name: values.name,
-      number: values.number,
-    });
+    dispatch(
+      addContact({
+        name: values.name,
+        phone: values.phone,
+      })
+    );
     action.resetForm();
   };
 
@@ -46,14 +50,14 @@ export default function ContactForm({ onAdd }) {
         </div>
 
         <div className={css.field}>
-          <label htmlFor={numberField}>Number</label>
+          <label htmlFor={numberField}>Phone</label>
           <Field
             className={css.input}
             type="text"
-            name="number"
+            name="phone"
             id={numberField}
           />
-          <ErrorMessage name="number" component="span" />
+          <ErrorMessage name="phone" component="span" />
         </div>
 
         <button className={css.button} type="submit">
